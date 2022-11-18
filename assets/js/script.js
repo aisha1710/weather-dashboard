@@ -28,3 +28,43 @@ const history = () => {
     }
   }
 };
+history();
+const showClear = () => {
+  if (searchForm.text() !== "") {
+    clearBtn.removeClass("hide");
+  }
+};
+showClear();
+
+$(document).on("submit", function () {
+  event.preventDefault();
+
+  var searchValue = searchCity.val().trim();
+
+  currentConditionsRequest(searchValue);
+  searchHistory(searchValue);
+  searchCity.val("");
+});
+
+searchBtn.on("click", function (event) {
+  event.preventDefault();
+
+  var searchValue = searchCity.val().trim();
+
+  currentConditionsRequest(searchValue);
+  searchHistory(searchValue);
+  searchCity.val("");
+});
+
+clearBtn.on("click", function () {
+  cityList = [];
+  listArray();
+
+  $(this).addClass("hide");
+});
+
+searchForm.on("click", "li.city-btn", function (event) {
+  var value = $(this).data("value");
+  currentConditionsRequest(value);
+  searchHistory(value);
+});
