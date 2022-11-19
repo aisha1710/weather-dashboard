@@ -36,7 +36,7 @@ Link to deployed app: https://aisha1710.github.io/weather-dashboard/
 
 ## Screenshot
 
-![The weather app includes a search option, a list of cities, and a five-day forecast and current weather conditions for Atlanta.](</Assets/images/Screenshot%20(9).png>)
+![The weather app includes a search option, a list of cities, and a five-day forecast and current weather conditions for Atlanta.](./Assets/images/screenshot.png)
 
 ## Questions
 
