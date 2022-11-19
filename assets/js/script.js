@@ -42,7 +42,7 @@ $(document).on("submit", function () {
   var searchValue = searchCity.val().trim();
 
   currentConditionsRequest(searchValue);
-  searchHistory(searchValue);
+  pastSearch(searchValue);
   searchCity.val("");
 });
 
@@ -52,7 +52,7 @@ searchBtn.on("click", function (event) {
   var searchValue = searchCity.val().trim();
 
   currentConditionsRequest(searchValue);
-  searchHistory(searchValue);
+  pastSearch(searchValue);
   searchCity.val("");
 });
 
@@ -66,7 +66,7 @@ clearBtn.on("click", function () {
 searchForm.on("click", "li.city-btn", function (event) {
   var value = $(this).data("value");
   currentConditionsRequest(value);
-  searchHistory(value);
+  pastSearch(value);
 });
 
 function currentConditionsRequest(searchValue) {
@@ -80,24 +80,24 @@ function currentConditionsRequest(searchValue) {
   $.ajax({
     url: apiURL,
     method: "GET",
-  }).then(function (response) {
-    city.text(response.name);
+  }).then(function (weather) {
+    city.text(weather.name);
     city.append("<small class='text-muted' id='current-date'>");
     $("#current-date").text("(" + currentDate + ")");
     city.append(
       "<img src='https://openweathermap.org/img/w/" +
-        response.weather[0].icon +
+        weather.weather[0].icon +
         ".png' alt='" +
-        response.weather[0].main +
+        weather.weather[0].main +
         "' />"
     );
-    temp.text(response.main.temp);
+    temp.text(weather.main.temp);
     temp.append("&deg;F");
-    humidity.text(response.main.humidity + "%");
-    windSpeed.text(response.wind.speed + "MPH");
+    humidity.text(weather.main.humidity + "%");
+    windSpeed.text(weather.wind.speed + "MPH");
 
-    var lat = response.coord.lat;
-    var lon = response.coord.lon;
+    var lat = weather.coord.lat;
+    var lon = weather.coord.lon;
 
     var UVurl =
       "https://api.openweathermap.org/data/2.5/uvi?&lat=" +
@@ -110,8 +110,8 @@ function currentConditionsRequest(searchValue) {
     $.ajax({
       url: UVurl,
       method: "GET",
-    }).then(function (response) {
-      UVindex.text(response.value);
+    }).then(function (weather) {
+      UVindex.text(weather.value);
     });
 
     var forecastURL =
@@ -125,46 +125,79 @@ function currentConditionsRequest(searchValue) {
     $.ajax({
       url: forecastURL,
       method: "GET",
-    }).then(function (response) {
+    }).then(function (weather) {
       $("#five-day-forecast").empty();
-      for (var i = 1; i < response.list.length; i += 8) {
-        var forecastDateString = moment(response.list[i].dt_txt).format("L");
+      for (var i = 1; i < weather.list.length; i += 8) {
+        var forecastDateString = moment(weather.list[i].dt_txt).format("L");
         console.log(forecastDateString);
 
         var forecastCol = $(
           "<div class='col-12 col-md-6 col-lg forecast-day mb-3'>"
         );
-        var forecastCard = $("<div class='card'>");
-        var forecastCardBody = $("<div class='card-body'>");
-        var forecastDate = $("<h5 class='card-title'>");
-        var forecastIcon = $("<img>");
-        var forecastTemp = $("<p class='card-text mb-0'>");
-        var forecastHumidity = $("<p class='card-text mb-0'>");
+        var card = $("<div class='card'>");
+        var cardInput = $("<div class='card-body'>");
+        var date = $("<h5 class='card-title'>");
+        var iconImage = $("<img>");
+        var temperature = $("<p class='card-text mb-0'>");
+        var humidity = $("<p class='card-text mb-0'>");
 
         $("#five-day-forecast").append(forecastCol);
-        forecastCol.append(forecastCard);
-        forecastCard.append(forecastCardBody);
+        forecastCol.append(card);
+        card.append(cardInput);
 
-        forecastCardBody.append(forecastDate);
-        forecastCardBody.append(forecastIcon);
-        forecastCardBody.append(forecastTemp);
-        forecastCardBody.append(forecastHumidity);
+        cardInput.append(date);
+        cardInput.append(iconImage);
+        cardInput.append(temperature);
+        cardInput.append(humidity);
 
-        forecastIcon.attr(
+        iconImage.attr(
           "src",
           "https://openweathermap.org/img/w/" +
-            response.list[i].weather[0].icon +
+            weather.list[i].weather[0].icon +
             ".png"
         );
-        forecastIcon.attr("alt", response.list[i].weather[0].main);
-        forecastDate.text(forecastDateString);
-        forecastTemp.text(response.list[i].main.temp);
-        forecastTemp.prepend("Temp: ");
-        forecastTemp.append("&deg;F");
-        forecastHumidity.text(response.list[i].main.humidity);
-        forecastHumidity.prepend("Humidity: ");
-        forecastHumidity.append("%");
+        iconImage.attr("alt", weather.list[i].weather[0].main);
+        date.text(forecastDateString);
+        temperature.text(weather.list[i].main.temp);
+        temperature.prepend("Temp: ");
+        temperature.append("&deg;F");
+        humidity.text(weather.list[i].main.humidity);
+        humidity.prepend("Humidity: ");
+        humidity.append("%");
       }
     });
   });
+}
+
+const pastSearch = (searchValue) => {
+  if (searchValue) {
+    if (cityList.indexOf(searchValue) === -1) {
+      cityList.push(searchValue);
+
+      listArray();
+      clearBtn.removeClass("hide");
+      weatherContent.removeClass("hide");
+    } else {
+      var removeIndex = cityList.indexOf(searchValue);
+      cityList.splice(removeIndex, 1);
+
+      cityList.push(searchValue);
+
+      listArray();
+      clearBtn.removeClass("hide");
+      weatherContent.removeClass("hide");
+    }
+  }
+};
+
+function listArray() {
+  searchForm.empty();
+
+  cityList.forEach(function (city) {
+    var pastSearch = $('<li class="list-group-item city-btn">');
+    pastSearch.attr("data-value", city);
+    pastSearch.text(city);
+    searchForm.prepend(pastSearch);
+  });
+  localStorage.setItem("cities", JSON.stringify(cityList));
 }

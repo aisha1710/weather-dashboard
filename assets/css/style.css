@@ -1,0 +1,11 @@
+.hide {
+  display: none;
+}
+
+.city-btn:hover {
+  cursor: pointer;
+}
+
+.card {
+  background-color: #b2ff9e;
+}
