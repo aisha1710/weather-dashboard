@@ -10,6 +10,7 @@
 - [License](#license)
 - [Description](#description)
 - [Usage](#usage)
+- [Screenshot](#screenshot)
 - [Questions](#questions)
 
 ## License
@@ -32,6 +33,10 @@ Third-party APIs allow developers to access their data and functionality by maki
 ## Usage
 
 Link to deployed app: https://aisha1710.github.io/weather-dashboard/
+
+## Screenshot
+
+![The weather app includes a search option, a list of cities, and a five-day forecast and current weather conditions for Atlanta.](<./Assets/images/Screenshot%20(9).png>)
 
 ## Questions
 
